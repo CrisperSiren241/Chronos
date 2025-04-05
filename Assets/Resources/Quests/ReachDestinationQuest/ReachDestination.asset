@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d80e33b2bbe4b0a4492bc93b0dc0be0f, type: 3}
+  m_Name: ReachDestination
+  m_EditorClassIdentifier: 
+  <id>k__BackingField: ReachDestination
+  displayName: "\u041F\u0440\u043E\u0439\u0442\u0438 \u0438\u0441\u043F\u044B\u0442\u0430\u043D\u0438\u0435"
+  levelRequirement: 0
+  questPrerequisites: []
+  questStepPrefabs:
+  - {fileID: 132434590527390243, guid: 593d9b5e772cdac40b28c7980663cec7, type: 3}
+  goldReward: 0
+  experienceReward: 0
