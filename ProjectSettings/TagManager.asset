@@ -9,6 +9,9 @@ TagManager:
   - Portal
   - MovingMagic
   - Targets
+  - Ball
+  - Wall
+  - AimCheck
   layers:
   - Default
   - TransparentFX

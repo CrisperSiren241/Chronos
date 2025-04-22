@@ -92,6 +92,9 @@ public class PlayerMovementAdvanced : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
 
+        rb = GetComponent<Rigidbody>();
+        rb.interpolation = RigidbodyInterpolation.None; // Отключаем интерполяцию для точности
+        rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
 
         readyToJump = true;
 
@@ -101,7 +104,7 @@ public class PlayerMovementAdvanced : MonoBehaviour
     private void Update()
     {
         // ground check
-        grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
+        grounded = ImprovedGroundCheck();
 
         MyInput();
         SpeedControl();
@@ -135,6 +138,8 @@ public class PlayerMovementAdvanced : MonoBehaviour
     private void FixedUpdate()
     {
         MovePlayer();
+        ApplyDownwardForce();
+        SnapToGround();
     }
 
     private void MyInput()
@@ -381,12 +386,11 @@ public class PlayerMovementAdvanced : MonoBehaviour
 
     public bool OnSlope()
     {
-        if (Physics.SphereCast(transform.position, 0.3f, Vector3.down, out slopeHit, playerHeight * 0.5f + 0.3f))
+        if (grounded && Physics.Raycast(transform.position, Vector3.down, out slopeHit, playerHeight * 0.5f + 0.5f))
         {
             float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
             return angle < maxSlopeAngle && angle != 0;
         }
-
         return false;
     }
 
@@ -412,4 +416,39 @@ public class PlayerMovementAdvanced : MonoBehaviour
         float mult = Mathf.Pow(10.0f, (float)digits);
         return Mathf.Round(value * mult) / mult;
     }
+
+    private bool ImprovedGroundCheck()
+    {
+        float checkDistance = playerHeight * 0.5f + 0.05f; // Всего 5см под персонажем
+        return Physics.Raycast(transform.position, Vector3.down, checkDistance, whatIsGround);
+    }
+
+    private void SnapToGround()
+    {
+        if (!grounded) return;
+
+        if (Physics.Raycast(transform.position, Vector3.down, out var hit,
+           playerHeight * 0.5f + 0.1f, whatIsGround))
+        {
+            // Жесткая фиксация к поверхности
+            float targetY = hit.point.y + playerHeight * 0.5f;
+            if (Mathf.Abs(transform.position.y - targetY) > 0.001f)
+            {
+                Vector3 newPos = transform.position;
+                newPos.y = targetY;
+                transform.position = newPos;
+                rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
+            }
+        }
+    }
+
+    private void ApplyDownwardForce()
+    {
+        if (grounded && rb.linearVelocity.y < 0.1f)
+        {
+            rb.AddForce(Vector3.down * 50f, ForceMode.Force); // Сильная прижимная сила
+        }
+    }
 }
+
+
